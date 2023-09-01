@@ -123,6 +123,33 @@ namespace Ink.Runtime
             count++;
             _visitCounts[containerPathStr] = count;
         }
+        public void DecrementVisitCountForContainer(Container container)
+        {
+            if (_patch != null)
+            {
+                int num = VisitCountForContainer(container);
+                if (num <= 0)
+                {
+                    story.Error("Visit count at target (" + container.name + " - on " + container.debugMetadata?.ToString() + ") already zero.");
+                    return;
+                }
+                num--;
+                _patch.SetVisitCount(container, num);
+            }
+            else
+            {
+                int value = 0;
+                string key = container.path.ToString();
+                _visitCounts.TryGetValue(key, out value);
+                if (value <= 0)
+                {
+                    story.Error("Visit count at target (" + container.name + " - on " + container.debugMetadata?.ToString() + ") already zero.");
+                    return;
+                }
+                value--;
+                _visitCounts[key] = value;
+            }
+        }
 
         public void RecordTurnIndexVisitToContainer(Container container)
         {
